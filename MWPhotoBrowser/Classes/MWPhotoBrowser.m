@@ -140,6 +140,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 @synthesize progressHUD = _progressHUD;
 @synthesize previousViewControllerBackButton = _previousViewControllerBackButton;
 @synthesize viewDelegate = _viewDelegate;
+@synthesize useCustomToolBar = _useCustomToolBar;
 
 #pragma mark - NSObject
 
@@ -147,6 +148,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     if ((self = [super init])) {
         
         // Defaults
+        self.useCustomToolBar = NO;
         self.wantsFullScreenLayout = YES;
         self.hidesBottomBarWhenPushed = YES;
         _photoCount = NSNotFound;
@@ -281,19 +283,22 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     }
     
     // Toolbar items & navigation
-    UIBarButtonItem *fixedLeftSpace = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil] autorelease];
-    fixedLeftSpace.width = 32; // To balance action button
-    UIBarButtonItem *flexSpace = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil] autorelease];
-    NSMutableArray *items = [[NSMutableArray alloc] init];
-    if (_displayActionButton) [items addObject:fixedLeftSpace];
-    [items addObject:flexSpace];
-    if (numberOfPhotos > 1) [items addObject:_previousButton];
-    [items addObject:flexSpace];
-    if (numberOfPhotos > 1) [items addObject:_nextButton];
-    [items addObject:flexSpace];
-    if (_displayActionButton) [items addObject:_actionButton];
-    [_toolbar setItems:items];
-    [items release];
+    if(!self.useCustomToolBar)
+    {
+        UIBarButtonItem *fixedLeftSpace = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil] autorelease];
+        fixedLeftSpace.width = 32; // To balance action button
+        UIBarButtonItem *flexSpace = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil] autorelease];
+        NSMutableArray *items = [[NSMutableArray alloc] init];
+        if (_displayActionButton) [items addObject:fixedLeftSpace];
+        [items addObject:flexSpace];
+        if (numberOfPhotos > 1) [items addObject:_previousButton];
+        [items addObject:flexSpace];
+        if (numberOfPhotos > 1) [items addObject:_nextButton];
+        [items addObject:flexSpace];
+        if (_displayActionButton) [items addObject:_actionButton];
+        [_toolbar setItems:items];
+        [items release];
+    }
 	[self updateNavigation];
     
     // Navigation buttons
@@ -870,6 +875,11 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 	// Buttons
 	_previousButton.enabled = (_currentPageIndex > 0);
 	_nextButton.enabled = (_currentPageIndex < [self numberOfPhotos]-1);
+    
+    if ([self.viewDelegate respondsToSelector:@selector(photoBrowser:updateToolbar:index:)]) 
+    {
+        [self.viewDelegate photoBrowser:self updateToolbar:_toolbar index:_currentPageIndex];
+    }
 	
 }
 

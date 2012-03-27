@@ -29,6 +29,7 @@
 @protocol MWPhotoBrowserViewDelegate <NSObject>
 @optional
 - (MWCaptionView *)photoBrowser:(MWPhotoBrowser *)photoBrowser captionViewForPhotoAtIndex:(NSUInteger)index;
+- (void)photoBrowser:(MWPhotoBrowser *)photoBrowser updateToolbar:(UIToolbar*)toolbar index:(NSUInteger)index;
 @end
 
 // MWPhotoBrowser
@@ -36,6 +37,7 @@
 
 // Properties
 @property (nonatomic) BOOL displayActionButton;
+@property (nonatomic) BOOL useCustomToolBar;
 @property (nonatomic, assign) id<MWPhotoBrowserViewDelegate> viewDelegate;
 
 // Init
